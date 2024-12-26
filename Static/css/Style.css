@@ -1,0 +1,113 @@
+/* Fondo general */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+}
+
+/* Estilo de la tarjeta */
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.card-body {
+    padding: 2rem;
+    background: #fff;
+    border-radius: 15px;
+}
+
+/* Título */
+.card-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+/* Labels */
+.form-label {
+    font-weight: 600;
+    color: #555;
+}
+
+/* Inputs */
+.form-control {
+    border-radius: 30px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    transition: border 0.3s ease-in-out;
+}
+
+.form-control:focus {
+    border-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+/* Botón principal */
+.btn-primary {
+    background-color: #4CAF50;
+    border: none;
+    padding: 12px 20px;
+    width: 100%;
+    border-radius: 30px;
+    font-size: 1.2rem;
+    transition: background-color 0.3s ease;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #2E7D32;
+}
+
+/* Botón secundario */
+.btn-secondary {
+    margin-top: 1rem;
+    background-color: #555;
+    border: none;
+    padding: 10px 20px;
+    width: 100%;
+    border-radius: 30px;
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background-color: #333;
+}
+
+/* Enlaces */
+.text-center a {
+    color: #4CAF50;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.text-center a:hover {
+    text-decoration: underline;
+}
+
+/* Espaciado adicional */
+.mt-4 {
+    margin-top: 2rem !important;
+}
+
+/* Pie de página */
+.footer {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+}

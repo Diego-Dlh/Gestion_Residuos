@@ -1,0 +1,177 @@
+#app.py
+from flask import Flask, render_template, redirect, url_for, flash, request
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from config import Config
+from models import db, Usuario, TipoUsuario, Recoleccion,Unidad,RecoleccionResiduo
+from datetime import datetime
+from flask_migrate import Migrate
+from functools import wraps
+
+from flask import render_template, make_response
+
+app = Flask(__name__)
+app.config.from_object(Config)
+db.init_app(app)
+migrate = Migrate(app, db)
+
+# Configuración de Flask-Login
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(Usuario, int(user_id))
+
+@app.route('/', methods=['GET', 'POST'])
+def home():
+    return redirect(url_for('login'))
+
+# Ruta para el registro de usuario
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        correo = request.form['correo']
+        contraseña = request.form['contraseña']
+
+        # Crear nuevo usuario con id_tipo=1
+        usuario = Usuario(id_tipo=1, nombre=nombre, correo=correo)
+        usuario.set_password(contraseña)  # Aquí el hash debería ser guardado correctamente
+        db.session.add(usuario)
+        db.session.commit()
+        
+        flash('Registro exitoso, ahora puedes iniciar sesión.')
+        return redirect(url_for('login'))
+    
+    return render_template('register.html')
+
+# Ruta para el inicio de sesión
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        # Verificación de usuario y contraseña
+        correo = request.form['correo']
+        contraseña = request.form['contraseña']
+        
+        # Buscar el usuario por correo (o por otro atributo de autenticación)
+        usuario = Usuario.query.filter_by(correo=correo).first()
+        
+        # Verifica si el usuario existe y si la contraseña es correcta
+        if usuario and usuario.check_password(contraseña):  # Suponiendo que tienes el método check_password
+            login_user(usuario)  # Aquí debes pasar la instancia del usuario, no la clase
+            # Redirigir al dashboard correspondiente según el tipo de usuario
+            if usuario.id_tipo == 0:
+                return redirect(url_for('admin_dashboard'))
+            elif usuario.id_tipo == 1:
+                return redirect(url_for('usuario_dashboard'))
+        else:
+            flash('Correo o contraseña incorrectos.', 'danger')
+
+    return render_template('login.html')
+
+# Ruta para el cierre de sesión
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('Has cerrado sesión.')
+    return redirect(url_for('login'))
+
+def role_required(role_id):
+    def wrapper(func):
+        @wraps(func)
+        def decorated_view(*args, **kwargs):
+            if not current_user.is_authenticated or current_user.id_tipo != role_id:
+                flash("Acceso denegado.", "warning")
+                return redirect(url_for('login'))
+            return func(*args, **kwargs)
+        return decorated_view
+    return wrapper
+
+@app.route('/admin_dashboard')
+@role_required(0)  # Solo admin
+def admin_dashboard():
+    return render_template('admin_dashboard.html')
+
+@app.route('/usuario_dashboard')
+@role_required(1)  # Solo usuario
+def usuario_dashboard():
+    return render_template('usuario_dashboard.html')
+
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()  # Crea las tablas en la base de datos si no existen
+    app.run(debug=True)
+
+
+# config.py
+import os
+
+class Config:
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'una_llave_secreta_para_flask'
+    SQLALCHEMY_DATABASE_URI = 'postgresql+pg8000://postgres:123456@localhost/Sistema_recoleccion'
+
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+#models.py
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
+from flask_login import UserMixin
+
+db = SQLAlchemy()
+bcrypt = Bcrypt()
+
+class TipoUsuario(db.Model):
+    __tablename__ = 'tipos_usuario'
+    id_tipo_usuario = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(50), nullable=False)
+
+class Usuario(UserMixin, db.Model):
+    __tablename__ = 'usuarios'
+    id_usuario = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    correo = db.Column(db.String(100), unique=True, nullable=False)
+    contraseña = db.Column(db.String(255), nullable=False)
+    id_tipo = db.Column(db.Integer, db.ForeignKey('tipos_usuario.id_tipo_usuario'), nullable=False)
+    tipo_usuario = db.relationship('TipoUsuario', backref=db.backref('usuarios', lazy=True))
+    
+# Propiedad para Flask-Login
+    @property
+    def id(self):
+        return self.id_usuario
+
+    def set_password(self, password):
+        self.contraseña = bcrypt.generate_password_hash(password).decode('utf-8')
+
+    def check_password(self, password):
+        return bcrypt.check_password_hash(self.contraseña, password)
+
+class TipoResiduo(db.Model):
+    __tablename__ = 'tipos_residuos'
+    id_tipo_residuo = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(50), nullable=False)
+
+class Unidad(db.Model):
+    __tablename__ = 'unidades'
+    id_unidad = db.Column(db.Integer, primary_key=True)
+    nombre = db.Column(db.String(100), nullable=False)
+    asociacion_id = db.Column(db.Integer, db.ForeignKey('usuarios.id_usuario'), nullable=False)
+    asociacion = db.relationship('Usuario', backref=db.backref('unidades', lazy=True))
+
+class Recoleccion(db.Model):
+    __tablename__ = 'recolecciones'
+    id_recoleccion = db.Column(db.Integer, primary_key=True)
+    fecha = db.Column(db.Date, nullable=False)
+    unidad_id = db.Column(db.Integer, db.ForeignKey('unidades.id_unidad'), nullable=False)
+    unidad = db.relationship('Unidad', backref=db.backref('recolecciones', lazy=True))
+
+class RecoleccionResiduo(db.Model):
+    __tablename__ = 'recoleccion_residuos'
+    id_recoleccion = db.Column(db.Integer, db.ForeignKey('recolecciones.id_recoleccion'), primary_key=True)
+    id_tipo_residuo = db.Column(db.Integer, db.ForeignKey('tipos_residuos.id_tipo_residuo'), primary_key=True)
+    cantidad = db.Column(db.Numeric(10, 2), default=0.00)
+    recoleccion = db.relationship('Recoleccion', backref=db.backref('residuos', lazy=True))
+    tipo_residuo = db.relationship('TipoResiduo', backref=db.backref('recolecciones_residuos', lazy=True))
+
+   

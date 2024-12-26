@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Total Recolectado por Mes</h1>
+
+    <!-- Formulario de filtro por mes -->
+    <form method="GET" action="{{ url_for('recoleccion_por_mes') }}" class="mb-4">
+        <label for="mes" class="mr-2">Selecciona el mes:</label>
+        <input type="month" id="mes" name="mes" class="form-control form-control-sm" value="{{ request.args.get('mes', '') }}">
+        <button type="submit" class="btn btn-primary btn-sm ml-2">Filtrar</button>
+    </form>
+
+    {% if recolecciones_mes %}
+        <div class="mb-4">
+            {% for mes, tipos_residuos in recolecciones_mes.items() %}
+                <h3>{{ mes }}</h3>
+                <ul class="list-group">
+                    {% for tipo_residuo, cantidad in tipos_residuos.items() %}
+                        <li class="list-group-item">
+                            {{ tipo_residuo }}: {{ cantidad }} kg
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No hay recolecciones registradas para este mes.</p>
+    {% endif %}
+
+    <a href="{{ url_for('usuario_dashboard') }}" class="btn btn-secondary">Regresar al Dashboard</a>
+{% endblock %}

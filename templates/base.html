@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Residuos</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        /* Estilos personalizados */
+        body {
+            background-color: #f6fff7; /* Verde muy claro */
+            color: #2e5233; /* Verde oscuro para el texto */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar {
+            background-color: #34c759; /* Verde principal */
+        }
+        .navbar-brand, .nav-link {
+            color: #ffffff !important; /* Blanco para el texto de la navbar */
+        }
+        .navbar-brand:hover, .nav-link:hover {
+            color: #daf5df !important; /* Verde claro en hover */
+        }
+        .container {
+            background-color: #ffffff; /* Fondo blanco para el contenido principal */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+            padding: 20px;
+            flex-grow: 1; /* Esto permite que el contenido crezca y empuje el footer hacia abajo */
+        }
+        .btn-primary {
+            background-color: #34c759;
+            border-color: #34c759;
+        }
+        .btn-primary:hover {
+            background-color: #2ea94f;
+            border-color: #2ea94f;
+        }
+        footer {
+            background-color: #34c759; /* Verde principal */
+            color: #ffffff;
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+        }
+        footer a {
+            color: #daf5df; /* Verde claro */
+            text-decoration: none;
+        }
+        footer a:hover {
+            color: #ffffff; /* Blanco en hover */
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="/">Gestión de Residuos</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">Cerrar sesión</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">Iniciar sesión</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('register') }}">Registrarse</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <div class="container mt-5">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Gestión de Residuos. Todos los derechos reservados.</p>
+        <a href="#">Términos y condiciones</a> | <a href="#">Política de privacidad</a>
+    </footer>
+
+    <!-- Bootstrap y jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

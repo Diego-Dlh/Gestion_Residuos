@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <!-- Título del Dashboard -->
+    <h1 class="text-center mb-5" style="color: #2E7D32; font-weight: bold;">Menu de Administrador</h1>
+
+    <!-- Tarjeta Principal -->
+    <div class="card shadow-lg border-0">
+        <div class="card-body">
+            <!-- Título de la Tarjeta -->
+            <h2 class="card-title text-center mb-4" style="color: #4CAF50; font-weight: bold;">Gestión de Unidades y Recolección</h2>
+            
+            <!-- Opciones de Gestión -->
+            <div class="list-group">
+                <!-- Crear y Asignar Unidades -->
+                <a href="{{ url_for('create_unidad') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center bg-light rounded-lg mb-3" style="border: 2px solid #4CAF50; padding: 15px;">
+                    <span style="font-size: 1.2rem; font-weight: 500; color: #2E7D32;">Crear y Asignar Unidades</span>
+                    <i class="bi bi-plus-circle-fill" style="font-size: 1.5rem; color: #4CAF50;"></i>
+                </a>
+
+                <!-- Ver Información de Recolección -->
+                <a href="{{ url_for('view_recoleccion') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center bg-light rounded-lg" style="border: 2px solid #4CAF50; padding: 15px;">
+                    <span style="font-size: 1.2rem; font-weight: 500; color: #2E7D32;">Ver Información de Recolección</span>
+                    <i class="bi bi-eye-fill" style="font-size: 1.5rem; color: #4CAF50;"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensaje en Pie de Página -->
+    <div class="text-center mt-5">
+        <p style="color: #555; font-size: 0.9rem;">Gestión de Residuos - Herramienta para una administración más eficiente y sostenible.</p>
+    </div>
+</div>
+{% endblock %}

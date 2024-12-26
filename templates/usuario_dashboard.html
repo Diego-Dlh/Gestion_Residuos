@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="display-4">Menu de la Asociación: {{ current_user.nombre }}</h1>
+
+    <!-- Información sobre las Unidades Asignadas -->
+    <h3 class="mt-4">Unidades Asignadas:</h3>
+    <ul class="list-group mb-4">
+        {% for unidad in current_user.unidades %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ unidad.nombre }}
+                <span class="badge badge-info badge-pill">Asignada</span>
+            </li>
+        {% else %}
+            <li class="list-group-item">No tiene unidades asignadas.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Total de Recolecciones por Tipo -->
+    <h3>Total de Recolecciones por Tipo:</h3>
+    <ul class="list-group mb-4">
+        {% for tipo_residuo, cantidad in total_recolecciones.items() %}
+            <li class="list-group-item d-flex justify-content-between">
+                {{ tipo_residuo }}
+                <span class="badge badge-success">{{ cantidad }} kg</span>
+            </li>
+        {% else %}
+            <li class="list-group-item">No hay recolecciones registradas.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Botones para Interacciones -->
+    <div class="d-flex flex-column mb-4">
+        <a href="{{ url_for('recoleccion_por_mes') }}" class="btn btn-outline-success btn-sm mb-3">Ver Total Recolectado por Mes</a>
+        <a href="{{ url_for('registrar_recoleccion') }}" class="btn btn-outline-primary btn-sm">Registrar Nueva Recolección</a>
+    </div>
+
+{% endblock %}

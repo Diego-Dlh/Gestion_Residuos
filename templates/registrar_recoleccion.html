@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Registrar Nueva Recolección</h1>
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="unidad_id">Unidad</label>
+            <select name="unidad_id" id="unidad_id" class="form-control" required>
+                {% for unidad in unidades %}
+                    <option value="{{ unidad.id_unidad }}">{{ unidad.nombre }}</option>
+                {% else %}
+                    <option disabled>No tiene unidades asignadas.</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="tipo_residuo">Tipo de Residuo</label>
+            <select name="tipo_residuo" id="tipo_residuo" class="form-control" required>
+                {% for tipo_residuo in tipos_residuos %}
+                    <option value="{{ tipo_residuo.id_tipo_residuo }}">{{ tipo_residuo.nombre }}</option>
+                {% else %}
+                    <option disabled>No hay tipos de residuos disponibles.</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="cantidad">Cantidad (kg)</label>
+            <input type="number" name="cantidad" id="cantidad" class="form-control" required min="0" step="any">
+        </div>
+
+        <button type="submit" class="btn btn-success">Registrar Recolección</button>
+        <a href="{{ url_for('usuario_dashboard') }}" class="btn btn-secondary ml-3">Cancelar</a>
+    </form>
+
+{% endblock %}

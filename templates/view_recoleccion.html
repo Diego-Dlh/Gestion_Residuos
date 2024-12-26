@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Información de Recolección</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Asociación</th>
+            <th>Unidad</th>
+            <th>Fecha</th>
+            <th>Residuos</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for recoleccion in recolecciones %}
+        <tr>
+            <td>{{ recoleccion.unidad.asociacion.nombre }}</td>
+            <td>{{ recoleccion.unidad.nombre }}</td>
+            <td>{{ recoleccion.fecha }}</td>
+            <td>
+                {% for residuo in recoleccion.residuos %}
+                    {{ residuo.tipo_residuo.nombre }}: {{ residuo.cantidad }} kg<br>
+                {% endfor %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
