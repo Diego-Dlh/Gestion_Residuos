@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Editar Asociación</h1>
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ asociacion.nombre }}" required>
+        </div>
+        <div class="form-group">
+            <label for="correo">Correo</label>
+            <input type="email" class="form-control" id="correo" name="correo" value="{{ asociacion.correo }}" required>
+        </div>
+        <button type="submit" class="btn btn-success">Actualizar</button>
+    </form>
+</div>
+{% endblock %}

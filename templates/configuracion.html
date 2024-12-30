@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="display-4">Configuración</h1>
+
+    <form method="POST">
+        <div class="form-group">
+            <label for="nueva_contraseña">Nueva Contraseña</label>
+            <input type="password" class="form-control" id="nueva_contraseña" name="nueva_contraseña" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+    </form>
+
+{% endblock %}

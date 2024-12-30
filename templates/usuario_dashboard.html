@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1 class="display-4">Menu de la Asociación: {{ current_user.nombre }}</h1>
+    <h1 class="display-4">Menú de la Asociación: {{ current_user.nombre }}</h1>
 
     <!-- Información sobre las Unidades Asignadas -->
     <h3 class="mt-4">Unidades Asignadas:</h3>
@@ -30,9 +30,17 @@
     </ul>
 
     <!-- Botones para Interacciones -->
-    <div class="d-flex flex-column mb-4">
-        <a href="{{ url_for('recoleccion_por_mes') }}" class="btn btn-outline-success btn-sm mb-3">Ver Total Recolectado por Mes</a>
-        <a href="{{ url_for('registrar_recoleccion') }}" class="btn btn-outline-primary btn-sm">Registrar Nueva Recolección</a>
+    <div class="d-flex flex-column align-items-center mb-4">
+        <a href="{{ url_for('recoleccion_por_mes') }}" class="btn btn-outline-success btn-sm mb-3 w-auto">Ver Total Recolectado por Mes</a>
+        <a href="{{ url_for('registrar_recoleccion') }}" class="btn btn-outline-primary btn-sm w-auto">Registrar Nueva Recolección</a>
+    </div>
+
+    <!-- Menú de Configuración -->
+    <div class="d-flex flex-column align-items-center mb-4">
+        <a href="#" class="btn btn-outline-info btn-sm mb-3 w-auto" data-toggle="collapse" data-target="#configuracionMenu" aria-expanded="false" aria-controls="configuracionMenu">Configuración</a>
+        <div class="collapse" id="configuracionMenu">
+            <a href="{{ url_for('cambiar_contraseña') }}" class="btn btn-outline-warning btn-sm w-auto">Cambiar Contraseña</a>
+        </div>
     </div>
 
 {% endblock %}

@@ -311,7 +311,74 @@ def editar_unidad(unidad_id):
 
     return render_template('editar_unidad.html', unidad=unidad, asociaciones=asociaciones)
 
+@app.route('/admin_dashboard/asociaciones/eliminar/<int:asociacion_id>', methods=['POST'])
+@role_required(1)  # Solo admin
+def eliminar_asociacion(asociacion_id):
+    asociacion = Usuario.query.get(asociacion_id)
+    if asociacion:
+        db.session.delete(asociacion)
+        db.session.commit()
+        flash('Asociación eliminada exitosamente.', 'success')
+    else:
+        flash('Asociación no encontrada.', 'danger')
+    return redirect(url_for('admin_asociaciones'))
 
+
+@app.route('/admin_dashboard/asociaciones/editar/<int:asociacion_id>', methods=['GET', 'POST'])
+@role_required(1)  # Solo admin
+def editar_asociacion(asociacion_id):
+    asociacion = Usuario.query.get(asociacion_id)
+
+    if not asociacion:
+        flash('Asociación no encontrada.', 'danger')
+        return redirect(url_for('admin_asociaciones'))
+
+    if request.method == 'POST':
+        asociacion.nombre = request.form['nombre']
+        asociacion.correo = request.form['correo']
+        db.session.commit()
+        flash('Asociación actualizada exitosamente.', 'success')
+        return redirect(url_for('admin_asociaciones'))
+
+    return render_template('editar_asociacion.html', asociacion=asociacion)
+
+@app.route('/configuracion', methods=['GET', 'POST'])
+@login_required
+def configuracion():
+    if request.method == 'POST':
+        # Obtener la nueva contraseña del formulario
+        nueva_contraseña = request.form['nueva_contraseña']
+        
+        # Validar que la contraseña no esté vacía
+        if not nueva_contraseña:
+            flash("La nueva contraseña no puede estar vacía.", "danger")
+            return redirect(url_for('configuracion'))
+
+        # Establecer la nueva contraseña
+        current_user.set_password(nueva_contraseña)
+        db.session.commit()
+        
+        flash("Contraseña cambiada exitosamente.", "success")
+        return redirect(url_for('usuario_dashboard'))
+
+    return render_template('configuracion.html')
+
+@app.route('/cambiar_contraseña', methods=['GET', 'POST'])
+@login_required
+def cambiar_contraseña():
+    if request.method == 'POST':
+        nueva_contraseña = request.form['nueva_contraseña']
+        confirmacion_contraseña = request.form['confirmacion_contraseña']
+        
+        if nueva_contraseña == confirmacion_contraseña:
+            current_user.set_password(nueva_contraseña)
+            db.session.commit()
+            flash('Contraseña cambiada con éxito.')
+            return redirect(url_for('usuario_dashboard'))
+        else:
+            flash('Las contraseñas no coinciden.', 'danger')
+    
+    return render_template('cambiar_contraseña.html')
 
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
