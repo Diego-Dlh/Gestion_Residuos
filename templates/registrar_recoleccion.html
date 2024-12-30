@@ -15,24 +15,46 @@
             </select>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" id="residuos-container">
             <label for="tipo_residuo">Tipo de Residuo</label>
-            <select name="tipo_residuo" id="tipo_residuo" class="form-control" required>
-                {% for tipo_residuo in tipos_residuos %}
-                    <option value="{{ tipo_residuo.id_tipo_residuo }}">{{ tipo_residuo.nombre }}</option>
-                {% else %}
-                    <option disabled>No hay tipos de residuos disponibles.</option>
-                {% endfor %}
-            </select>
+            <div class="form-row">
+                <div class="col-12 col-md-6">
+                    <select name="tipo_residuo[]" class="form-control" required>
+                        {% for tipo_residuo in tipos_residuos %}
+                            <option value="{{ tipo_residuo.id_tipo_residuo }}">{{ tipo_residuo.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-md-6">
+                    <input type="number" name="cantidad[]" class="form-control" required min="0" step="any" placeholder="Cantidad (kg)">
+                </div>
+            </div>
         </div>
 
-        <div class="form-group">
-            <label for="cantidad">Cantidad (kg)</label>
-            <input type="number" name="cantidad" id="cantidad" class="form-control" required min="0" step="any">
-        </div>
+        <button type="button" class="btn btn-secondary" id="add-residuo">Añadir más residuos</button>
 
         <button type="submit" class="btn btn-success">Registrar Recolección</button>
         <a href="{{ url_for('usuario_dashboard') }}" class="btn btn-secondary ml-3">Cancelar</a>
     </form>
 
+    <script>
+        document.getElementById('add-residuo').addEventListener('click', function() {
+            var container = document.getElementById('residuos-container');
+            var newEntry = document.createElement('div');
+            newEntry.classList.add('form-row');
+            newEntry.innerHTML = `
+                <div class="col-12 col-md-6">
+                    <select name="tipo_residuo[]" class="form-control" required>
+                        {% for tipo_residuo in tipos_residuos %}
+                            <option value="{{ tipo_residuo.id_tipo_residuo }}">{{ tipo_residuo.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12 col-md-6">
+                    <input type="number" name="cantidad[]" class="form-control" required min="0" step="any" placeholder="Cantidad (kg)">
+                </div>
+            `;
+            container.appendChild(newEntry);
+        });
+    </script>
 {% endblock %}

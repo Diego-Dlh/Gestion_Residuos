@@ -128,25 +128,29 @@ def usuario_dashboard():
 def registrar_recoleccion():
     if request.method == 'POST':
         unidad_id = request.form['unidad_id']
-        cantidad = request.form['cantidad']
-        tipo_residuo_id = request.form['tipo_residuo']
+        tipos_residuos = request.form.getlist('tipo_residuo[]')  # Obtén todos los tipos de residuos
+        cantidades = request.form.getlist('cantidad[]')  # Obtén todas las cantidades
         
+        # Crear una nueva recolección
         nueva_recoleccion = Recoleccion(
             fecha=datetime.now(),
             unidad_id=unidad_id
         )
         db.session.add(nueva_recoleccion)
         db.session.commit()
+
+        # Registrar cada tipo de residuo y su cantidad asociada
+        for tipo_residuo_id, cantidad in zip(tipos_residuos, cantidades):
+            reco_residuo = RecoleccionResiduo(
+                id_recoleccion=nueva_recoleccion.id_recoleccion,
+                id_tipo_residuo=tipo_residuo_id,
+                cantidad=cantidad
+            )
+            db.session.add(reco_residuo)
         
-        reco_residuo = RecoleccionResiduo(
-            id_recoleccion=nueva_recoleccion.id_recoleccion,
-            id_tipo_residuo=tipo_residuo_id,
-            cantidad=cantidad
-        )
-        db.session.add(reco_residuo)
         db.session.commit()
         
-        flash('Recolección registrada exitosamente.')
+        flash('Recolecciones registradas exitosamente.')
         return redirect(url_for('usuario_dashboard'))
     
     # Obtener unidades asignadas para el formulario
