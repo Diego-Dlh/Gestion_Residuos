@@ -1,34 +1,61 @@
 {% extends "base.html" %}
 {% block content %}
-    <h1>Información de Recolección</h1>
-    
-    <!-- Tabla con diseño mejorado -->
-    <table class="table table-striped table-bordered table-hover">
-        <thead class="thead-dark">
-            <tr>
-                <th scope="col">Asociación</th>
-                <th scope="col">Unidad</th>
-                <th scope="col">Fecha</th>
-                <th scope="col">Residuos</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for recoleccion in recolecciones %}
-            <tr>
-                <td>{{ recoleccion.unidad.asociacion.nombre }}</td>
-                <td>{{ recoleccion.unidad.nombre }}</td>
-                <td>{{ recoleccion.fecha.strftime('%d/%m/%Y') }}</td> <!-- Formato de fecha mejorado -->
-                <td>
-                    {% for residuo in recoleccion.residuos %}
-                        <span class="badge badge-info">{{ residuo.tipo_residuo.nombre }}: {{ residuo.cantidad }} kg</span><br>
+    <h1 class="mb-4">Información de Recolección</h1>
+
+    <!-- Formulario de filtro por mes y por asociación -->
+    <form method="GET" action="{{ url_for('view_recoleccion') }}" class="mb-4 card p-4">
+        <h4 class="card-title mb-3">Filtrar Recolección</h4>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="mes">Mes (Formato: MM)</label>
+                <input type="month" id="mes" name="mes" class="form-control" value="{{ request.args.get('mes', '') }}" placeholder="Selecciona un mes (ej. 05)">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="asociacion">Asociación</label>
+                <select id="asociacion" name="asociacion" class="form-control">
+                    <option value="">Todas</option>
+                    {% for asociacion in asociaciones %}
+                    <option value="{{ asociacion.id }}" {% if request.args.get('asociacion') == (asociacion.id | string) %}selected{% endif %}>
+                        {{ asociacion.nombre }}
+                    </option>
                     {% endfor %}
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="4" class="text-center text-muted">No se encontraron registros de recolección.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                </select>
+            </div>
+            <div class="form-group col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary btn-lg btn-block">Filtrar</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Tabla con diseño mejorado -->
+    <div class="table-responsive">
+        <table class="table table-striped table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Asociación</th>
+                    <th scope="col">Unidad</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Residuos</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for recoleccion in recolecciones %}
+                <tr>
+                    <td>{{ recoleccion.unidad.asociacion.nombre }}</td>
+                    <td>{{ recoleccion.unidad.nombre }}</td>
+                    <td>{{ recoleccion.fecha.strftime('%d/%m/%Y') }}</td> <!-- Formato de fecha mejorado -->
+                    <td>
+                        {% for residuo in recoleccion.residuos %}
+                            <span class="badge badge-info">{{ residuo.tipo_residuo.nombre }}: {{ residuo.cantidad }} kg</span><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="text-center text-muted">No se encontraron registros de recolección.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

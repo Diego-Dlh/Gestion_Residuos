@@ -245,12 +245,47 @@ def delete_unidad(unidad_id):
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin_dashboard/recoleccion', methods=['GET'])
-@role_required(1)  # Solo admin
+@login_required
+@role_required(1)  # Asegúrate de que el usuario sea admin
 def view_recoleccion():
-    asociaciones = Usuario.query.filter_by(id_tipo=1).all()
-    recolecciones = Recoleccion.query.all()
+    # Obtener los parámetros de la consulta
+    mes = request.args.get('mes', '')  # Si no hay mes, se usa una cadena vacía
+    asociacion_id = request.args.get('asociacion', '')
 
-    return render_template('view_recoleccion.html', asociaciones=asociaciones, recolecciones=recolecciones)
+    # Convertir asociacion_id a entero si está presente
+    if asociacion_id:
+        try:
+            asociacion_id = int(asociacion_id)
+        except ValueError:
+            flash('ID de asociación no válido', 'error')
+            return redirect(url_for('view_recoleccion'))
+
+    # Consultar las recolecciones, solo filtrando por asociación si se proporciona
+    query = db.session.query(Recoleccion).join(Unidad)
+
+    if asociacion_id:
+        query = query.filter(Unidad.asociacion_id == asociacion_id)
+
+    # Filtrar por mes si se proporciona
+    if mes:
+        try:
+            mes = int(mes)
+            query = query.filter(db.extract('month', Recoleccion.fecha) == mes)
+        except ValueError:
+            flash('Mes no válido', 'error')
+            return redirect(url_for('view_recoleccion'))
+
+    # Obtener las asociaciones de la base de datos
+    asociaciones = db.session.query(Usuario).all()
+
+    # Obtener los resultados de la consulta
+    recolecciones = query.all()
+
+    return render_template('view_recoleccion.html', 
+                           recolecciones=recolecciones, 
+                           mes=mes, 
+                           asociacion_id=asociacion_id,
+                           asociaciones=asociaciones)
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 @app.route('/admin_dashboard/asociaciones', methods=['GET'])
