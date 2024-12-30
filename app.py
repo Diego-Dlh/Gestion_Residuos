@@ -10,7 +10,8 @@ from functools import wraps
 
 from flask import render_template, make_response
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='Static')
+
 app.config.from_object(Config)
 db.init_app(app)
 migrate = Migrate(app, db)
