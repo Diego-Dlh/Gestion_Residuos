@@ -12,7 +12,8 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #34c759, #28a745); /* Colores de fondo verdes */
+            background: url('{{ url_for('static', filename='images/fondo.png') }}') no-repeat center center fixed; /* Fondo de la imagen */
+            background-size: cover; /* Hace que la imagen cubra toda la pantalla */
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -25,6 +26,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 400px;
+            background: rgba(255, 255, 255, 0.8); /* Fondo blanco translúcido para el card */
         }
         .card-body {
             padding: 2rem;
@@ -127,7 +129,15 @@
 
     <!-- Barra superior con el botón de Acerca de Nosotros -->
     <div class="navbar d-flex justify-content-between align-items-center p-3">
-        <h3 class="ms-3">SISTEMA DE SEGUIMIENTO DE RECOLECCION DE RESIDUOS APROVECHABLES</h3>
+        <h3 class="ms-3" style="font-size: 1.5rem; font-weight: bold;">
+            SISTEMA DE SEGUIMIENTO DE RECOLECCIÓN DE RESIDUOS APROVECHABLES
+        </h3>
+        <!-- Sección de logos -->
+        <div class="d-flex align-items-center">
+            <img src="{{ url_for('static', filename='images/logo1.png') }}" alt="Logo 1" style="width: 80px; height: auto; margin: 0 5px;">
+            <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="Logo 2" style="width: 80px; height: auto; margin: 0 5px;">
+            <img src="{{ url_for('static', filename='images/logo3.png') }}" alt="Logo 3" style="width: 80px; height: auto; margin: 0 5px;">
+        </div>
     </div>
 
     <div class="card mt-5">
