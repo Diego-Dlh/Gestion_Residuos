@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container mt-5">
     <!-- Título del Dashboard -->
-    <h1 class="text-center mb-5" style="color: #2E7D32; font-weight: bold;">Menu de Administrador</h1>
+    <h1 class="text-center mb-5" style="color: #2E7D32; font-weight: bold;">Menú de Administrador</h1>
 
     <!-- Tarjeta Principal -->
     <div class="card shadow-lg border-0">
@@ -19,9 +19,21 @@
                 </a>
 
                 <!-- Ver Información de Recolección -->
-                <a href="{{ url_for('view_recoleccion') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center bg-light rounded-lg" style="border: 2px solid #4CAF50; padding: 15px;">
+                <a href="{{ url_for('view_recoleccion') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center bg-light rounded-lg mb-3" style="border: 2px solid #4CAF50; padding: 15px;">
                     <span style="font-size: 1.2rem; font-weight: 500; color: #2E7D32;">Ver Información de Recolección</span>
                     <i class="bi bi-eye-fill" style="font-size: 1.5rem; color: #4CAF50;"></i>
+                </a>
+
+                <!-- Administrar Asociaciones -->
+                <a href="{{ url_for('admin_asociaciones') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center bg-light rounded-lg mb-3" style="border: 2px solid #4CAF50; padding: 15px;">
+                    <span style="font-size: 1.2rem; font-weight: 500; color: #2E7D32;">Administrar Asociaciones</span>
+                    <i class="bi bi-people-fill" style="font-size: 1.5rem; color: #4CAF50;"></i>
+                </a>
+
+                <!-- Administrar Unidades -->
+                <a href="{{ url_for('admin_unidades') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center bg-light rounded-lg" style="border: 2px solid #4CAF50; padding: 15px;">
+                    <span style="font-size: 1.2rem; font-weight: 500; color: #2E7D32;">Administrar Unidades</span>
+                    <i class="bi bi-boxes" style="font-size: 1.5rem; color: #4CAF50;"></i>
                 </a>
             </div>
         </div>

@@ -249,6 +249,68 @@ def view_recoleccion():
     return render_template('view_recoleccion.html', asociaciones=asociaciones, recolecciones=recolecciones)
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+@app.route('/admin_dashboard/asociaciones', methods=['GET'])
+@role_required(1)  # Solo admin
+def admin_asociaciones():
+    asociaciones = Usuario.query.filter_by(id_tipo=2).all()  # Filtrar usuarios de tipo asociación
+    return render_template('admin_asociaciones.html', asociaciones=asociaciones)
+
+
+@app.route('/admin_dashboard/unidades', methods=['GET', 'POST'])
+@role_required(1)  # Solo admin
+def admin_unidades():
+    unidades = Unidad.query.all()
+    asociaciones = Usuario.query.filter_by(id_tipo=2).all()  # Asociaciones para asignar a las unidades
+
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        asociacion_id = request.form['asociacion_id']
+
+        if not nombre or not asociacion_id:
+            flash('Todos los campos son obligatorios.', 'danger')
+            return redirect(url_for('admin_unidades'))
+
+        nueva_unidad = Unidad(nombre=nombre, asociacion_id=asociacion_id)
+        db.session.add(nueva_unidad)
+        db.session.commit()
+        flash('Unidad creada exitosamente.', 'success')
+        return redirect(url_for('admin_unidades'))
+
+    return render_template('admin_unidades.html', unidades=unidades, asociaciones=asociaciones)
+
+
+@app.route('/admin_dashboard/unidades/eliminar/<int:unidad_id>', methods=['POST'])
+@role_required(1)  # Solo admin
+def eliminar_unidad(unidad_id):
+    unidad = Unidad.query.get(unidad_id)
+    if unidad:
+        db.session.delete(unidad)
+        db.session.commit()
+        flash('Unidad eliminada exitosamente.', 'success')
+    else:
+        flash('Unidad no encontrada.', 'danger')
+    return redirect(url_for('admin_unidades'))
+
+
+@app.route('/admin_dashboard/unidades/editar/<int:unidad_id>', methods=['GET', 'POST'])
+@role_required(1)  # Solo admin
+def editar_unidad(unidad_id):
+    unidad = Unidad.query.get(unidad_id)
+    asociaciones = Usuario.query.filter_by(id_tipo=2).all()  # Asociaciones para asignar a las unidades
+
+    if not unidad:
+        flash('Unidad no encontrada.', 'danger')
+        return redirect(url_for('admin_unidades'))
+
+    if request.method == 'POST':
+        unidad.nombre = request.form['nombre']
+        unidad.asociacion_id = request.form['asociacion_id']
+        db.session.commit()
+        flash('Unidad actualizada exitosamente.', 'success')
+        return redirect(url_for('admin_unidades'))
+
+    return render_template('editar_unidad.html', unidad=unidad, asociaciones=asociaciones)
+
 
 
 
