@@ -422,6 +422,93 @@ def cambiar_contraseña():
 
 #------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+from flask import request, make_response, send_file
+import pandas as pd
+from io import BytesIO
+from datetime import datetime
+from sqlalchemy import extract
+
+@app.route('/download_recoleccion_excel', methods=['GET'])
+@login_required
+@role_required(1)  # Solo admin
+
+def download_recoleccion_excel():
+    # Obtener los filtros desde los argumentos GET
+    mes = request.args.get('mes')
+    asociacion = request.args.get('asociacion')
+
+    # Construir la consulta base
+    query = (
+        db.session.query(Recoleccion)
+        .join(Unidad)
+        .join(Usuario, Unidad.asociacion_id == Usuario.id_usuario)
+        .join(RecoleccionResiduo)
+        .join(TipoResiduo)
+    )
+
+    # Aplicar filtro por mes si se proporciona
+    if mes:
+        try:
+            filtro_mes = datetime.strptime(mes, '%Y-%m')
+            query = query.filter(
+                extract('year', Recoleccion.fecha) == filtro_mes.year,
+                extract('month', Recoleccion.fecha) == filtro_mes.month
+            )
+        except ValueError:
+            flash('Formato de mes inválido. Use YYYY-MM.', 'error')
+            return redirect(url_for('view_recoleccion'))
+
+    # Aplicar filtro por asociación si se proporciona
+    if asociacion:
+        try:
+            asociacion_id = int(asociacion)
+            query = query.filter(Unidad.asociacion_id == asociacion_id)
+        except ValueError:
+            flash('ID de asociación no válido.', 'error')
+            return redirect(url_for('view_recoleccion'))
+
+    # Ejecutar la consulta
+    recolecciones = query.all()
+
+    # Crear el archivo Excel
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        # Preparar los datos para el DataFrame
+        data = []
+        for reco in recolecciones:
+            for residuo in reco.residuos:
+                data.append({
+                    'Asociación': reco.unidad.asociacion.nombre,
+                    'Unidad': reco.unidad.nombre,
+                    'Fecha': reco.fecha.strftime('%Y-%m-%d'),
+                    'Residuo': residuo.tipo_residuo.nombre,
+                    'Cantidad (kg)': residuo.cantidad
+                })
+
+        # Crear DataFrame
+        df = pd.DataFrame(data)
+
+        # Exportar a Excel
+        df.to_excel(writer, index=False, sheet_name='Recolección')
+
+        # Ajustar formato del Excel
+        workbook = writer.book
+        worksheet = writer.sheets['Recolección']
+        for idx, column in enumerate(df.columns):
+            worksheet.set_column(idx, idx, max(len(column), 20))
+
+    output.seek(0)
+
+    # Devolver el archivo Excel como respuesta
+    return send_file(
+        output,
+        as_attachment=True,
+        download_name=f"recoleccion_{mes or 'todo'}.xlsx",
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+
+
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Crea las tablas en la base de datos si no existen
