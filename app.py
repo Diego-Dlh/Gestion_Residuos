@@ -295,6 +295,32 @@ def admin_asociaciones():
     return render_template('admin_asociaciones.html', asociaciones=asociaciones)
 
 
+@app.route('/delete_recoleccion/<int:recoleccion_id>', methods=['POST'])
+@login_required
+def delete_recoleccion(recoleccion_id):
+    recoleccion = db.session.get(Recoleccion, recoleccion_id)
+    
+    if not recoleccion:
+        flash('Recolección no encontrada.', 'danger')
+        return redirect(url_for('view_recoleccion'))
+
+    try:
+        # Eliminar manualmente los residuos antes de eliminar la recolección
+        RecoleccionResiduo.query.filter_by(id_recoleccion=recoleccion_id).delete()
+
+        # Ahora eliminar la recolección
+        db.session.delete(recoleccion)
+        db.session.commit()
+
+        flash('Recolección eliminada exitosamente.', 'success')
+
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error al eliminar la recolección: {str(e)}', 'danger')
+
+    return redirect(url_for('view_recoleccion'))
+
+
 @app.route('/admin_dashboard/unidades', methods=['GET', 'POST'])
 @role_required(1)  # Solo admin
 def admin_unidades():
