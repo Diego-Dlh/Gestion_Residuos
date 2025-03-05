@@ -2,31 +2,70 @@
 {% block content %}
 <div class="container mt-5">
     <!-- Título de la Página -->
-    <h1 class="text-center mb-4" style="color: #2E7D32; font-weight: bold;">Crear y Asignar Unidad</h1>
+    <h1 class="text-center fw-bold text-success">🏗 Crear y Asignar Unidad</h1>
 
     <!-- Formulario -->
-    <form method="POST" class="card shadow-lg p-4" style="border: 2px solid #4CAF50; border-radius: 10px;">
-        <div class="form-group mb-4">
-            <label for="nombre" style="font-weight: 500; color: #2E7D32;">Nombre de la Unidad</label>
-            <input type="text" name="nombre" id="nombre" class="form-control form-control-lg" placeholder="Nombre de la unidad" required style="border-radius: 30px; border: 1px solid #4CAF50; padding: 15px;">
-        </div>
+    <div class="card shadow-lg border-0 rounded-4 mt-4">
+        <div class="card-body p-4">
+            <form method="POST">
+                <div class="mb-4">
+                    <label for="nombre" class="form-label fw-semibold text-success">🏢 Nombre de la Unidad</label>
+                    <input type="text" name="nombre" id="nombre" class="form-control form-control-lg rounded-pill shadow-sm" 
+                           placeholder="Ejemplo: Unidad Reciclaje Norte" required>
+                </div>
 
-        <div class="form-group mb-4">
-            <label for="asociacion_id" style="font-weight: 500; color: #2E7D32;">Asociación</label>
-            <select name="asociacion_id" id="asociacion_id" class="form-control form-control-lg" required style="border-radius: 30px; border: 1px solid #4CAF50; padding: 15px;">
-                <option value="">Seleccionar Asociación</option>
-                {% for asociacion in asociaciones %}
-                    <option value="{{ asociacion.id_usuario }}">{{ asociacion.nombre }}</option>
-                {% endfor %}
-            </select>
-        </div>
+                <div class="mb-4">
+                    <label for="asociacion_id" class="form-label fw-semibold text-success">🤝 Asociación</label>
+                    <select name="asociacion_id" id="asociacion_id" class="form-select form-select-lg rounded-pill shadow-sm" required>
+                        <option value="" selected>Seleccionar Asociación</option>
+                        {% for asociacion in asociaciones %}
+                            <option value="{{ asociacion.id_usuario }}">{{ asociacion.nombre }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
 
-        <button type="submit" class="btn btn-primary btn-lg btn-block" style="border-radius: 30px; padding: 12px 20px; font-size: 1.2rem;">Crear Unidad</button>
-    </form>
+                <button type="submit" class="btn btn-primary w-100 py-2 fs-5 rounded-pill shadow-sm">
+                    <i class="bi bi-check-circle"></i> Crear Unidad
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- Mensaje de confirmación -->
-    <div class="text-center mt-5">
-        <p style="color: #555; font-size: 0.9rem;">Asegúrese de seleccionar correctamente la Asociación antes de crear la unidad.</p>
+    <div class="text-center mt-4">
+        <p class="text-muted">⚠️ Asegúrese de seleccionar correctamente la Asociación antes de crear la unidad.</p>
     </div>
 </div>
+
+<!-- Estilos personalizados -->
+<style>
+    .btn {
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+
+    .form-control, .form-select {
+        border: 2px solid #4CAF50;
+        padding: 12px;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #2E7D32;
+        box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+    }
+
+    .card {
+        border-radius: 15px;
+        background: #f9f9f9;
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.8rem;
+        }
+    }
+</style>
 {% endblock %}

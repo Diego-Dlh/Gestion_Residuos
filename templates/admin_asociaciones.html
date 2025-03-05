@@ -1,33 +1,71 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Listado de Asociaciones</h1>
+    <h1 class="text-center text-success fw-bold mb-4">📋 Listado de Asociaciones</h1>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Correo</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for asociacion in asociaciones %}
-            <tr>
-                <td>{{ asociacion.nombre }}</td>
-                <td>{{ asociacion.correo }}</td>
-                <td>
-                    <!-- Botón para actualizar -->
-                    <a href="{{ url_for('editar_asociacion', asociacion_id=asociacion.id) }}" class="btn btn-warning btn-sm">Editar</a>
+    <div class="card shadow-lg border-0 rounded-4 p-4">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>🏢 Nombre</th>
+                        <th>📧 Correo</th>
+                        <th class="text-center">⚙️ Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asociacion in asociaciones %}
+                    <tr>
+                        <td class="fw-semibold">{{ asociacion.nombre }}</td>
+                        <td>{{ asociacion.correo }}</td>
+                        <td class="text-center">
+                            <!-- Botón para actualizar -->
+                            <a href="{{ url_for('editar_asociacion', asociacion_id=asociacion.id) }}" class="btn btn-warning btn-sm me-2">
+                                ✏️ Editar
+                            </a>
 
-                    <!-- Botón para eliminar -->
-                    <form action="{{ url_for('eliminar_asociacion', asociacion_id=asociacion.id) }}" method="POST" style="display:inline;">
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar esta asociación?');">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                            <!-- Botón para eliminar -->
+                            <form action="{{ url_for('eliminar_asociacion', asociacion_id=asociacion.id) }}" method="POST" class="d-inline">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de eliminar esta asociación?');">
+                                    🗑️ Eliminar
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center text-muted">❌ No hay asociaciones registradas.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+<!-- Estilos personalizados -->
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 128, 0, 0.1);
+    }
+
+    .btn {
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+
+    .card {
+        background: #f9f9f9;
+        border-radius: 15px;
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.8rem;
+        }
+    }
+</style>
 {% endblock %}

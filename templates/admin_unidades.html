@@ -1,48 +1,92 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center mb-4">Administrar Unidades</h1>
+    <h1 class="text-center text-success fw-bold mb-4">⚙️ Administrar Unidades</h1>
 
-    <form method="POST" class="mb-4">
-        <h3>Crear Nueva Unidad</h3>
-        <div class="form-group">
-            <label for="nombre">Nombre</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" required>
-        </div>
-        <div class="form-group">
-            <label for="asociacion_id">Asociación</label>
-            <select class="form-control" id="asociacion_id" name="asociacion_id" required>
-                {% for asociacion in asociaciones %}
-                <option value="{{ asociacion.id }}">{{ asociacion.nombre }}</option>
+    <!-- Formulario para crear unidad -->
+    <div class="card shadow-lg border-0 rounded-4 p-4 mb-4">
+        <h3 class="mb-3 text-primary">➕ Crear Nueva Unidad</h3>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="nombre" class="form-label fw-semibold">🏢 Nombre de la Unidad</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Ingrese el nombre" required>
+            </div>
+            <div class="mb-3">
+                <label for="asociacion_id" class="form-label fw-semibold">🏛️ Asociación</label>
+                <select class="form-select" id="asociacion_id" name="asociacion_id" required>
+                    <option value="" disabled selected>Seleccione una asociación</option>
+                    {% for asociacion in asociaciones %}
+                        <option value="{{ asociacion.id }}">{{ asociacion.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success w-100">✅ Crear Unidad</button>
+        </form>
+    </div>
+
+    <!-- Listado de unidades -->
+    <h3 class="text-primary">📋 Listado de Unidades</h3>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>🏢 Nombre</th>
+                    <th>🏛️ Asociación</th>
+                    <th class="text-center">⚙️ Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for unidad in unidades %}
+                <tr>
+                    <td class="fw-semibold">{{ unidad.nombre }}</td>
+                    <td>{{ unidad.asociacion.nombre }}</td>
+                    <td class="text-center">
+                        <!-- Botón para editar -->
+                        <a href="{{ url_for('editar_unidad', unidad_id=unidad.id_unidad) }}" class="btn btn-warning btn-sm me-2">
+                            ✏️ Editar
+                        </a>
+
+                        <!-- Botón para eliminar con confirmación -->
+                        <form method="POST" action="{{ url_for('eliminar_unidad', unidad_id=unidad.id_unidad) }}" class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('⚠️ ¿Estás seguro de eliminar esta unidad?');">
+                                🗑️ Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-center text-muted">❌ No hay unidades registradas.</td>
+                </tr>
                 {% endfor %}
-            </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Crear</button>
-    </form>
-
-    <h3>Listado de Unidades</h3>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Asociación</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for unidad in unidades %}
-            <tr>
-                <td>{{ unidad.nombre }}</td>
-                <td>{{ unidad.asociacion.nombre }}</td>
-                <td>
-                    <a href="{{ url_for('editar_unidad', unidad_id=unidad.id_unidad) }}" class="btn btn-warning btn-sm">Editar</a>
-                    <form method="POST" action="{{ url_for('eliminar_unidad', unidad_id=unidad.id_unidad) }}" style="display:inline;">
-                        <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                 </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<!-- Estilos personalizados -->
+<style>
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 128, 0, 0.1);
+    }
+
+    .btn {
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+
+    .card {
+        background: #f9f9f9;
+        border-radius: 15px;
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.8rem;
+        }
+    }
+</style>
 {% endblock %}

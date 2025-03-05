@@ -1,44 +1,94 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Total Recolectado por Mes</h1>
-
+<div class="container mt-5">
+    <h1 class="display-5 text-center text-dark fw-bold">
+        <i class="bi bi-bar-chart-fill text-success"></i> Total Recolectado por Mes
+    </h1>
+    
     <!-- Formulario de filtro por mes -->
-    <form method="GET" action="{{ url_for('recoleccion_por_mes') }}" class="mb-4">
-        <div class="form-row align-items-center">
-            <div class="col-auto">
-                <label for="mes" class="mr-2">Selecciona el mes:</label>
+    <div class="card shadow-sm p-4 mt-4">
+        <form method="GET" action="{{ url_for('recoleccion_por_mes') }}">
+            <div class="row justify-content-center">
+                <div class="col-md-4 col-sm-6">
+                    <label for="mes" class="form-label fw-bold">📅 Selecciona el mes:</label>
+                    <input type="month" id="mes" name="mes" class="form-control" value="{{ request.args.get('mes', '2024-12') }}">
+                </div>
+                <div class="col-auto d-flex align-items-end">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="bi bi-funnel"></i> Filtrar
+                    </button>
+                </div>
             </div>
-            <div class="col-auto">
-                <input type="month" id="mes" name="mes" class="form-control form-control-sm" value="{{ request.args.get('mes', '2024-12') }}">
-            </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
-            </div>
-        </div>
-    </form>
+        </form>
+    </div>
 
+    <!-- Resultados de recolección -->
     {% if recolecciones_mes %}
-        <div class="mb-4">
+        <div class="row mt-4">
             {% for mes, tipos_residuos in recolecciones_mes.items() %}
-                <h3>{{ mes }}</h3>
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <ul class="list-group">
-                            {% for tipo_residuo, cantidad in tipos_residuos.items() %}
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <span>{{ tipo_residuo }}</span>
-                                    <span class="badge badge-info">{{ cantidad }} kg</span>
-                                </li>
-                            {% endfor %}
-                        </ul>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-success text-white fw-bold">
+                            📆 {{ mes }}
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group">
+                                {% for tipo_residuo, cantidad in tipos_residuos.items() %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>♻️ {{ tipo_residuo }}</span>
+                                        <span class="badge bg-dark text-white">{{ cantidad }} kg</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <p>No hay recolecciones registradas para este mes.</p>
+        <div class="alert alert-warning text-center mt-4">
+            <i class="bi bi-exclamation-circle"></i> No hay recolecciones registradas para este mes.
+        </div>
     {% endif %}
 
-    <a href="{{ url_for('usuario_dashboard') }}" class="btn btn-secondary mt-3">Regresar al Dashboard</a>
+    <!-- Botón de regreso -->
+    <div class="text-center mt-4">
+        <a href="{{ url_for('usuario_dashboard') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Regresar al Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Estilos personalizados -->
+<style>
+    .btn {
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+
+    .card {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        font-size: 1.2rem;
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.8rem;
+        }
+
+        .btn {
+            font-size: 1rem;
+            padding: 10px;
+        }
+    }
+</style>
+
 {% endblock %}

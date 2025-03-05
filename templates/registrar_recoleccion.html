@@ -1,12 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Registrar Nueva Recolección</h1>
+<div class="container mt-5">
+    <h1 class="text-center text-success">Registrar Nueva Recolección</h1>
+    <p class="text-muted text-center">Complete los datos para registrar una nueva recolección.</p>
 
-    <form method="POST">
+    <form method="POST" class="card shadow-lg p-4">
         <div class="form-group">
-            <label for="unidad_id">Unidad</label>
-            <select name="unidad_id" id="unidad_id" class="form-control" required>
+            <label for="unidad_id" class="font-weight-bold">Unidad</label>
+            <select name="unidad_id" id="unidad_id" class="form-control form-control-lg" required>
                 {% for unidad in unidades %}
                     <option value="{{ unidad.id_unidad }}">{{ unidad.nombre }}</option>
                 {% else %}
@@ -15,46 +17,26 @@
             </select>
         </div>
 
-        <div class="form-group" id="residuos-container">
-            <label for="tipo_residuo">Tipo de Residuo</label>
-            <div class="form-row">
-                <div class="col-12 col-md-6">
-                    <select name="tipo_residuo[]" class="form-control" required>
-                        {% for tipo_residuo in tipos_residuos %}
-                            <option value="{{ tipo_residuo.id_tipo_residuo }}">{{ tipo_residuo.nombre }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-12 col-md-6">
-                    <input type="number" name="cantidad[]" class="form-control" required min="0" step="any" placeholder="Cantidad (kg)">
-                </div>
+        <div class="form-group">
+            <label for="tipo_residuo" class="font-weight-bold">Tipo de Residuo</label>
+            <div class="input-group">
+                <select name="tipo_residuo[]" class="form-control form-control-lg" required>
+                    {% for tipo_residuo in tipos_residuos %}
+                        <option value="{{ tipo_residuo.id_tipo_residuo }}">{{ tipo_residuo.nombre }}</option>
+                    {% endfor %}
+                </select>
             </div>
         </div>
 
-        <button type="button" class="btn btn-secondary" id="add-residuo">Añadir más residuos</button>
+        <div class="form-group">
+            <label for="cantidad" class="font-weight-bold">Cantidad (kg)</label>
+            <input type="number" name="cantidad[]" class="form-control form-control-lg" required min="0" step="any" placeholder="Ingrese la cantidad">
+        </div>
 
-        <button type="submit" class="btn btn-success">Registrar Recolección</button>
-        <a href="{{ url_for('usuario_dashboard') }}" class="btn btn-secondary ml-3">Cancelar</a>
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-success btn-lg px-5">Registrar</button>
+            <a href="{{ url_for('usuario_dashboard') }}" class="btn btn-secondary btn-lg ml-3 px-5">Cancelar</a>
+        </div>
     </form>
-
-    <script>
-        document.getElementById('add-residuo').addEventListener('click', function() {
-            var container = document.getElementById('residuos-container');
-            var newEntry = document.createElement('div');
-            newEntry.classList.add('form-row');
-            newEntry.innerHTML = `
-                <div class="col-12 col-md-6">
-                    <select name="tipo_residuo[]" class="form-control" required>
-                        {% for tipo_residuo in tipos_residuos %}
-                            <option value="{{ tipo_residuo.id_tipo_residuo }}">{{ tipo_residuo.nombre }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-12 col-md-6">
-                    <input type="number" name="cantidad[]" class="form-control" required min="0" step="any" placeholder="Cantidad (kg)">
-                </div>
-            `;
-            container.appendChild(newEntry);
-        });
-    </script>
+</div>
 {% endblock %}

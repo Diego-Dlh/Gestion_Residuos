@@ -1,46 +1,91 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1 class="display-4">Menú de la Asociación: {{ current_user.nombre }}</h1>
+<div class="container mt-5">
+    <h1 class="display-4 text-primary fw-bold text-center">🏢 Menú de Asociación: {{ current_user.nombre }}</h1>
 
-    <!-- Información sobre las Unidades Asignadas -->
-    <h3 class="mt-4">Unidades Asignadas:</h3>
-    <ul class="list-group mb-4">
-        {% for unidad in current_user.unidades %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                {{ unidad.nombre }}
-                <span class="badge badge-info badge-pill">Asignada</span>
-            </li>
-        {% else %}
-            <li class="list-group-item">No tiene unidades asignadas.</li>
-        {% endfor %}
-    </ul>
+    <!-- Unidades Asignadas -->
+    <div class="card shadow-lg mt-4">
+        <div class="card-header bg-primary text-white fw-bold">🏠 Unidades Asignadas</div>
+        <ul class="list-group list-group-flush">
+            {% for unidad in current_user.unidades %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ unidad.nombre }}
+                    <span class="badge bg-info text-white">✅ Asignada</span>
+                </li>
+            {% else %}
+                <li class="list-group-item text-muted text-center">❌ No tiene unidades asignadas.</li>
+            {% endfor %}
+        </ul>
+    </div>
 
     <!-- Total de Recolecciones por Tipo -->
-    <h3>Total de Recolecciones por Tipo:</h3>
-    <ul class="list-group mb-4">
-        {% for tipo_residuo, cantidad in total_recolecciones.items() %}
-            <li class="list-group-item d-flex justify-content-between">
-                {{ tipo_residuo }}
-                <span class="badge badge-success">{{ cantidad }} kg</span>
-            </li>
-        {% else %}
-            <li class="list-group-item">No hay recolecciones registradas.</li>
-        {% endfor %}
-    </ul>
+    <div class="card shadow-lg mt-4">
+        <div class="card-header bg-success text-white fw-bold">♻️ Total de Recolecciones por Tipo</div>
+        <ul class="list-group list-group-flush">
+            {% for tipo_residuo, cantidad in total_recolecciones.items() %}
+                <li class="list-group-item d-flex justify-content-between">
+                    {{ tipo_residuo }}
+                    <span class="badge bg-success text-white">{{ cantidad }} kg</span>
+                </li>
+            {% else %}
+                <li class="list-group-item text-muted text-center">📉 No hay recolecciones registradas.</li>
+            {% endfor %}
+        </ul>
+    </div>
 
-    <!-- Botones para Interacciones -->
-    <div class="d-flex flex-column align-items-center mb-4">
-        <a href="{{ url_for('recoleccion_por_mes') }}" class="btn btn-outline-success btn-sm mb-3 w-auto">Ver Total Recolectado por Mes</a>
-        <a href="{{ url_for('registrar_recoleccion') }}" class="btn btn-outline-primary btn-sm w-auto">Registrar Nueva Recolección</a>
+    <!-- Botones de Acciones -->
+    <div class="text-center mt-4">
+        <a href="{{ url_for('recoleccion_por_mes') }}" class="btn btn-outline-success btn-lg me-2">
+            📊 Ver Total Recolectado por Mes
+        </a>
+        <a href="{{ url_for('registrar_recoleccion') }}" class="btn btn-outline-primary btn-lg">
+            ➕ Registrar Nueva Recolección
+        </a>
     </div>
 
     <!-- Menú de Configuración -->
-    <div class="d-flex flex-column align-items-center mb-4">
-        <a href="#" class="btn btn-outline-info btn-sm mb-3 w-auto" data-toggle="collapse" data-target="#configuracionMenu" aria-expanded="false" aria-controls="configuracionMenu">Configuración</a>
-        <div class="collapse" id="configuracionMenu">
-            <a href="{{ url_for('cambiar_contraseña') }}" class="btn btn-outline-warning btn-sm w-auto">Cambiar Contraseña</a>
+    <div class="text-center mt-4">
+        <button class="btn btn-outline-info btn-lg" data-toggle="collapse" data-target="#configuracionMenu">
+            ⚙️ Configuración
+        </button>
+        <div class="collapse mt-3" id="configuracionMenu">
+            <a href="{{ url_for('cambiar_contraseña') }}" class="btn btn-outline-warning btn-lg">
+                🔑 Cambiar Contraseña
+            </a>
         </div>
     </div>
+</div>
+
+<!-- Estilos personalizados -->
+<style>
+    .btn {
+        transition: all 0.3s ease-in-out;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .card-header {
+        font-size: 1.2rem;
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.8rem;
+        }
+
+        .btn {
+            font-size: 1rem;
+            padding: 10px;
+        }
+    }
+</style>
 
 {% endblock %}
