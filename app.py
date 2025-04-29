@@ -123,15 +123,20 @@ def usuario_dashboard():
     return render_template('usuario_dashboard.html', total_recolecciones=total_recolecciones)
 
 # Ruta para registrar una nueva recolección
+from flask import session  # Asegúrate de importar session
+
 @app.route('/registrar_recoleccion', methods=['GET', 'POST'])
 @login_required
 def registrar_recoleccion():
+    if 'recolecciones_temporales' not in session:
+        session['recolecciones_temporales'] = []
+
     if request.method == 'POST':
         unidad_id = request.form['unidad_id']
-        tipos_residuos = request.form.getlist('tipo_residuo[]')  # Obtén todos los tipos de residuos
-        cantidades = request.form.getlist('cantidad[]')  # Obtén todas las cantidades
-        
-        # Crear una nueva recolección
+        tipos_residuos = request.form.getlist('tipo_residuo[]')
+        cantidades = request.form.getlist('cantidad[]')
+
+        # Guardar en la base de datos
         nueva_recoleccion = Recoleccion(
             fecha=datetime.now(),
             unidad_id=unidad_id
@@ -139,7 +144,6 @@ def registrar_recoleccion():
         db.session.add(nueva_recoleccion)
         db.session.commit()
 
-        # Registrar cada tipo de residuo y su cantidad asociada
         for tipo_residuo_id, cantidad in zip(tipos_residuos, cantidades):
             reco_residuo = RecoleccionResiduo(
                 id_recoleccion=nueva_recoleccion.id_recoleccion,
@@ -147,16 +151,32 @@ def registrar_recoleccion():
                 cantidad=cantidad
             )
             db.session.add(reco_residuo)
-        
+
+            # También guardamos en la sesión temporal para mostrar en pantalla
+            session['recolecciones_temporales'].append({
+                'unidad_id': unidad_id,
+                'unidad_nombre': Unidad.query.get(unidad_id).nombre,
+                'tipo_residuo_id': tipo_residuo_id,
+                'tipo_residuo_nombre': TipoResiduo.query.get(tipo_residuo_id).nombre,
+                'cantidad': cantidad
+            })
+
         db.session.commit()
-        
-        flash('Recolecciones registradas exitosamente.')
-        return redirect(url_for('usuario_dashboard'))
-    
-    # Obtener unidades asignadas para el formulario
+        session.modified = True  # Necesario para actualizar la sesión
+        flash('Recolección registrada exitosamente.', 'success')
+        return redirect(url_for('registrar_recoleccion'))
+
     unidades = current_user.unidades
     tipos_residuos = TipoResiduo.query.all()
-    return render_template('registrar_recoleccion.html', unidades=unidades, tipos_residuos=tipos_residuos)
+    recolecciones_temporales = session.get('recolecciones_temporales', [])
+    return render_template('registrar_recoleccion.html', unidades=unidades, tipos_residuos=tipos_residuos, recolecciones_temporales=recolecciones_temporales)
+
+@app.route('/cancelar_registro')
+@login_required
+def cancelar_registro():
+    session.pop('recolecciones_temporales', None)  # Elimina los registros temporales de sesión
+    return redirect(url_for('usuario_dashboard'))
+
 
 from sqlalchemy import extract
 from datetime import datetime
